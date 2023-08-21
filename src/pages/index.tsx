@@ -1,27 +1,53 @@
 import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import Head from "next/head";
 import Link from "next/link";
-import { api } from "@/utils/api";
+import { type RouterOutputs, api } from "@/utils/api";
 import { Button } from "@/components/ui/button";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { CreatePostWizard } from "@/components/createPostWizard";
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+import { CreatePostWizard } from "@/components/CreatePostWizard";
+import { SiteHeader } from "@/components/SiteHeader";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+
+type PostWithUser = RouterOutputs["posts"]["getAll"][number];
+
+const PostView = (props: PostWithUser) => {
+  const { author, post } = props;
+  return (
+    <Card>
+      <CardHeader className="flex flex-row">
+        <Avatar>
+          <AvatarImage
+            src={
+              author?.imageUrl ??
+              `https://api.dicebear.com/6.x/notionists-neutral/svg?seed=${user?.id}`
+            }
+          />
+        </Avatar>
+        <CardTitle className="px-4">{author?.firstName}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p>{post.content}</p>
+      </CardContent>
+    </Card>
+  );
+};
 
 export default function Home() {
   const { data } = api.posts.getAll.useQuery();
 
   const user = useUser();
+
   return (
     <>
       <Head>
@@ -30,6 +56,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
+        <SiteHeader />
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
           {!user.isSignedIn && (
             <SignInButton>
@@ -41,12 +68,14 @@ export default function Home() {
               <Button variant={"outline"}>Sign out with Clerk</Button>
             </SignOutButton>
           )}
-          <div>
-            {data?.map((post) => {
-              return <div key={post.id}>{post.content}</div>;
+
+          {user.isSignedIn && <CreatePostWizard />}
+
+          <div className="w-full max-w-2xl">
+            {data?.map((fullPost) => {
+              return <PostView key={fullPost.post.id} {...fullPost} />;
             })}
           </div>
-          {user.isSignedIn && <CreatePostWizard />}
         </div>
       </main>
     </>

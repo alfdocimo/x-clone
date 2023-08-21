@@ -1,10 +1,10 @@
-"use client";
-
+import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -14,13 +14,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 
 const FormSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
+  post: z
+    .string({ required_error: "Please type something before sending" })
+    .min(10, {
+      message: "Bio must be at least 10 characters.",
+    })
+    .max(255, {
+      message: "Bio must not be longer than 255 characters.",
+    }),
 });
 
 export function CreatePostWizard() {
@@ -41,24 +48,27 @@ export function CreatePostWizard() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-2xl">
         <FormField
           control={form.control}
-          name="username"
+          name="post"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Post</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Textarea
+                  placeholder="Whats on your mind..."
+                  className="resize-none"
+                  {...field}
+                />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button className="mt-4" type="submit">
+          Submit
+        </Button>
       </form>
     </Form>
   );
