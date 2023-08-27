@@ -27,7 +27,7 @@ const FormSchema = z.object({
     }),
 });
 
-export function CreatePostWizard() {
+export const CreatePostWizard = () => {
   const ctx = api.useContext();
   const { mutate, isLoading } = api.posts.create.useMutation({
     onSuccess: () => {
@@ -85,4 +85,4 @@ export function CreatePostWizard() {
       </form>
     </Form>
   );
-}
+};
