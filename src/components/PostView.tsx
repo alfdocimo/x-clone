@@ -1,6 +1,6 @@
 import { type RouterOutputs } from "@/utils/api";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
+import { Avatar, AvatarImage } from "./ui/avatar";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";

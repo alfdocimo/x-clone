@@ -13,6 +13,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import AppLayout from "@/components/AppLayout";
+import Link from "next/link";
 
 dayjs.extend(relativeTime);
 
@@ -70,9 +71,11 @@ export default function Home() {
 
           {data?.map((fullPost) => {
             return (
-              <div className="py-2" key={fullPost.post.id}>
-                <PostView {...fullPost} />
-              </div>
+              <Link key={fullPost.post.id} href={`/post/${fullPost.post?.id}`}>
+                <div className="py-2">
+                  <PostView {...fullPost} />
+                </div>
+              </Link>
             );
           })}
         </AppLayout>

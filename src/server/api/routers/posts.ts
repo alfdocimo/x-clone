@@ -54,4 +54,25 @@ export const postsRouter = createTRPCRouter({
 
       return post;
     }),
+
+  getById: publicProcedure
+    .input(z.object({ postId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.prisma.post.findUniqueOrThrow({
+        where: {
+          id: input.postId,
+        },
+      });
+
+      const user = await clerkClient.users.getUser(post.authorId);
+
+      const filteredUserForClient = filterUserForClient(user);
+
+      console.log({ post });
+
+      return {
+        post,
+        author: filteredUserForClient,
+      };
+    }),
 });
