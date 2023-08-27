@@ -5,7 +5,7 @@ import { type RouterOutputs, api } from "@/utils/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { CreatePostWizard } from "@/components/CreatePostWizard";
+import { CreatePost } from "@/components/CreatePost";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
@@ -77,7 +77,7 @@ export default function Home() {
             </SignOutButton>
           )}
 
-          {user.isSignedIn && <CreatePostWizard />}
+          {user.isSignedIn && <CreatePost />}
 
           <div className="w-full max-w-2xl">
             {data?.map((fullPost) => {
