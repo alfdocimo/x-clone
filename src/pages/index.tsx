@@ -1,23 +1,19 @@
-import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import Head from "next/head";
-import Link from "next/link";
+
 import { type RouterOutputs, api } from "@/utils/api";
 import { Button } from "@/components/ui/button";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { CreatePostWizard } from "@/components/CreatePostWizard";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
+
+dayjs.extend(relativeTime);
 
 type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 
@@ -30,11 +26,14 @@ const PostView = (props: PostWithUser) => {
           <AvatarImage
             src={
               author?.imageUrl ??
-              `https://api.dicebear.com/6.x/notionists-neutral/svg?seed=${user?.id}`
+              `https://api.dicebear.com/6.x/notionists-neutral/svg?seed=${author?.id}`
             }
           />
         </Avatar>
-        <CardTitle className="px-4">{author?.firstName}</CardTitle>
+        <CardTitle className="px-4 text-sm text-slate-700">
+          <span>{author?.firstName} · </span>
+          <span className="">{dayjs(post.createdAt).fromNow()}</span>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <p>{post.content}</p>
@@ -44,9 +43,18 @@ const PostView = (props: PostWithUser) => {
 };
 
 export default function Home() {
-  const { data } = api.posts.getAll.useQuery();
+  const { data, isLoading } = api.posts.getAll.useQuery();
 
   const user = useUser();
+
+  if (isLoading) {
+    // TODO: Add proper loading UI...
+    return (
+      <div className="flex h-screen w-screen items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -73,7 +81,11 @@ export default function Home() {
 
           <div className="w-full max-w-2xl">
             {data?.map((fullPost) => {
-              return <PostView key={fullPost.post.id} {...fullPost} />;
+              return (
+                <div className="py-2" key={fullPost.post.id}>
+                  <PostView {...fullPost} />
+                </div>
+              );
             })}
           </div>
         </div>

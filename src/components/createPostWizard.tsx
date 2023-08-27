@@ -1,23 +1,20 @@
-import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
+import { api } from "@/utils/api";
 
 const FormSchema = z.object({
   post: z
@@ -31,11 +28,22 @@ const FormSchema = z.object({
 });
 
 export function CreatePostWizard() {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const ctx = api.useContext();
+  const { mutate, isLoading } = api.posts.create.useMutation({
+    onSuccess: () => {
+      void ctx.posts.getAll.invalidate();
+    },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      post: "",
+    },
+  });
+
+  const onSubmit = (data: z.infer<typeof FormSchema>) => {
+    form.resetField("post");
     toast({
       title: "You submitted the following values:",
       description: (
@@ -44,11 +52,16 @@ export function CreatePostWizard() {
         </pre>
       ),
     });
-  }
+
+    mutate({ content: data.post });
+  };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-2xl">
+      <form
+        onSubmit={(event) => void form.handleSubmit(onSubmit)(event)}
+        className="w-full max-w-2xl"
+      >
         <FormField
           control={form.control}
           name="post"
@@ -66,7 +79,7 @@ export function CreatePostWizard() {
             </FormItem>
           )}
         />
-        <Button className="mt-4" type="submit">
+        <Button className="mt-4" type="submit" disabled={isLoading}>
           Submit
         </Button>
       </form>
