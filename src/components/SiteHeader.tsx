@@ -1,6 +1,7 @@
-import { useUser } from "@clerk/nextjs";
+import { SignOutButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
 export function SiteHeader() {
   const { user } = useUser();
@@ -11,6 +12,11 @@ export function SiteHeader() {
           <span className="font-bold">Yitter</span>
         </Link>
         <div className="flex items-center">
+          <div className="px-4">
+            <SignOutButton>
+              <Button variant={"outline"}>Sign out</Button>
+            </SignOutButton>
+          </div>
           <span className="hidden px-4 md:block">{user?.firstName}</span>
           <Avatar>
             <AvatarImage

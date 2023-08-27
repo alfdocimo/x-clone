@@ -67,7 +67,7 @@ export const CreatePost = () => {
           name="post"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Post</FormLabel>
+              <FormLabel>Whats on your mind... 💭</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Whats on your mind..."
